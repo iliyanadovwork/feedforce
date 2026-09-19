@@ -1,0 +1,750 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* FeedForce landing components use `dark:` variants keyed to a `.dark` wrapper class. */
+@custom-variant dark (&:is(.dark *));
+
+/* Chirp — legacy Twitter/X header font; superseded by Libre Franklin below (kept for safety). */
+@font-face {
+  font-family: 'Chirp';
+  src: url('/chirp-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Libre Franklin — the Twitter/X reel header + caption rendered into the canvas (drawHeader.ts).
+   Self-hosted variable file: one file covers 400 (caption/handle) and 700 (name). Load-bearing. */
+@font-face {
+  font-family: 'Libre Franklin';
+  src: url('/libre-franklin.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Neue Montreal Bold — used by the FeedForce sidebar logo. */
+@font-face {
+  font-family: 'Neue Montreal';
+  src: url('/neue-montreal-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================================
+   DESIGN TOKENS  (HIG-aligned, dark-only). Brand hues unchanged — only named.
+   Primitives are raw values; semantics (the only thing components reference via
+   the @theme mapping) point at primitives. See DESIGN_SYSTEM.md.
+   [data-force-theme="dark"] re-applies this whole set to a SUBTREE: custom
+   properties declared on an element beat the light-theme overrides inherited
+   from :root, so surfaces that must stay dark regardless of the user's theme
+   (e.g. the landing page's auth dialog — the landing is always dark) wrap
+   themselves in that attribute.
+   ========================================================================== */
+:root, [data-force-theme="dark"] {
+  /* —— Primitives: zinc ramp + true black/white —— */
+  --black: #000000;
+  --white: #ffffff;
+  --zinc-950: #09090b;
+  --zinc-900: #18181b;
+  --zinc-800: #27272a;
+  --zinc-700: #3f3f46;
+  --zinc-600: #52525b;
+  --zinc-500: #71717a;
+  --zinc-400: #a1a1aa;
+  --zinc-300: #d4d4d8;
+  --zinc-200: #e4e4e7;
+  --zinc-100: #f4f4f5;
+
+  /* —— Primitives: signature brand accent (brand green #00CD40) —— */
+  --brand-500: #00cd40;            /* base accent fill — bright green, so text on it is BLACK */
+  --brand-600: #00a836;            /* hover/pressed (deeper green) */
+  --brand-400: #34df66;            /* AA as text/icon on dark (lighter green) */
+  --brand-tint: rgb(0 205 64 / 0.14);
+  --brand-tint-hover: rgb(0 205 64 / 0.22);
+  --brand-border: rgb(0 205 64 / 0.45);
+  --brand-glow: rgb(0 205 64 / 0.14);
+
+  /* —— Primitives: status hues —— */
+  --blue-500: #3b82f6;  --blue-400: #60a5fa;
+  --blue-tint: rgb(59 130 246 / 0.12);  --blue-border: rgb(59 130 246 / 0.40);
+  --red-600: #dc2626;   --red-500: #ef4444;  --red-400: #f87171;
+  --red-tint: rgb(220 38 38 / 0.15);  --red-tint-hover: rgb(220 38 38 / 0.25);  --red-border: rgb(220 38 38 / 0.40);
+  --green-500: #22c55e; --green-400: #4ade80;
+  --green-tint: rgb(34 197 94 / 0.12);  --green-border: rgb(34 197 94 / 0.40);
+  --amber-500: #f97316; --amber-400: #fbbf24;
+  --amber-tint: rgb(249 115 22 / 0.15);  --amber-border: rgb(249 115 22 / 0.40);
+
+  /* —— Semantics: surfaces —— */
+  --surface-page: #0a0a0a;
+  --surface-1: #0a0a0a;
+  --surface-2: var(--zinc-900);
+  --surface-3: var(--zinc-800);
+  --surface-overlay: rgb(24 24 27 / 0.85);     /* zinc-900 translucent (overlay tier only) */
+  --surface-hover: rgb(255 255 255 / 0.04);
+  --surface-active: rgb(255 255 255 / 0.08);
+  --surface-inset: var(--black);
+
+  /* —— Semantics: borders —— */
+  --line: var(--zinc-800);
+  --line-strong: var(--zinc-700);
+  --line-faint: rgb(255 255 255 / 0.08);
+
+  /* —— Semantics: text —— */
+  --fg: var(--white);
+  --fg-2: var(--zinc-400);
+  --fg-3: var(--zinc-500);
+  --fg-4: var(--zinc-600);
+
+  /* —— Semantics: primary action (white button) + brand accent —— */
+  --action: var(--white);
+  --action-hover: var(--zinc-200);
+  --action-active: var(--zinc-300);
+  --action-fg: var(--black);
+  --accent: var(--brand-500);
+  --accent-hover: var(--brand-600);
+  --accent-fg: var(--black);       /* accent is light green → black text/glyphs on it */
+  --accent-text: var(--brand-400);
+  --accent-tint: var(--brand-tint);
+  --accent-tint-hover: var(--brand-tint-hover);
+  --accent-border: var(--brand-border);
+
+  /* —— Semantics: status —— */
+  --info: var(--blue-500);     --info-text: var(--blue-400);    --info-tint: var(--blue-tint);     --info-border: var(--blue-border);
+  --danger: var(--red-600);    --danger-text: var(--red-400);   --danger-tint: var(--red-tint);    --danger-tint-hover: var(--red-tint-hover);  --danger-border: var(--red-border);
+  --success: var(--green-500); --success-text: var(--green-400);--success-tint: var(--green-tint); --success-border: var(--green-border);
+  --warning: var(--amber-500); --warning-text: var(--amber-400);--warning-tint: var(--amber-tint); --warning-border: var(--amber-border);
+
+  --focus: var(--white);
+
+  /* —— Motion —— */
+  --dur-fast: 80ms;
+  --dur-base: 160ms;
+  --dur-spatial: 240ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-emphasized: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+
+  /* —— Z layers —— */
+  --z-sticky: 10;
+  --z-dropdown: 1000;
+  --z-overlay: 1100;
+  --z-modal: 1200;
+  --z-toast: 1300;
+  --z-max: 2147483000;
+
+  /* —— Misc —— */
+  --scrim: rgb(0 0 0 / 0.60);
+  --scrollbar-thumb: var(--zinc-700);
+  --scrollbar-thumb-hover: var(--zinc-600);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.40);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.50);
+  --shadow-3: 0 16px 48px rgb(0 0 0 / 0.60);
+  --shadow-glow: 0 0 48px var(--brand-glow);
+
+  --font-system: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, system-ui, sans-serif;
+  --font-mono-stack: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Monaco, "Cascadia Mono", Consolas, monospace;
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --line: var(--zinc-600);
+    --line-faint: var(--zinc-600);
+    --fg-2: var(--zinc-300);
+    --fg-3: var(--zinc-400);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --surface-overlay: var(--zinc-900); }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  :root { --surface-overlay: var(--zinc-900); }
+}
+
+/* ============================================================================
+   LIGHT THEMES — opt-in via data-theme on <html> (set by the sidebar picker +
+   the no-flash script in layout.tsx; default / no attribute = dark). Two
+   values: "light" (neutral zinc-on-white) and "light-hard" ("Warm Light" —
+   the warm Gruvbox-hard palette from the VSCode Vim Light Hard theme).
+   Structure: this ^="light" block is the SHARED LIGHT BASE (neutral light is
+   exactly this block); the "light-hard" block after it overrides the warm
+   values. Both (0,2,0) specificity → source order decides, so block order is
+   load-bearing. Overrides ONLY semantic tokens; the marketing landing
+   (.ff-landing) is unaffected.
+   ========================================================================== */
+:root[data-theme^="light"] {
+  /* Surfaces — off-white page, white panels, light-gray tiers */
+  --surface-page: #fafafa;
+  --surface-1: #ffffff;
+  --surface-2: var(--zinc-100);
+  --surface-3: var(--zinc-200);
+  --surface-overlay: rgb(255 255 255 / 0.85);
+  --surface-hover: rgb(0 0 0 / 0.045);
+  --surface-active: rgb(0 0 0 / 0.08);
+  --surface-inset: var(--zinc-100);
+
+  /* Borders */
+  --line: var(--zinc-200);
+  --line-strong: var(--zinc-300);
+  --line-faint: rgb(0 0 0 / 0.08);
+
+  /* Text — near-black → mid gray (fg-3/fg-4 darkened to clear AA on white/near-white; the old
+     zinc-500/400 were ~3.8:1 / ~2.5:1 — unreadable for captions, placeholders and meta) */
+  --fg: var(--zinc-950);
+  --fg-2: var(--zinc-600);
+  --fg-3: #5c5c64;
+  --fg-4: #6e6e77;
+
+  /* Primary action becomes a black button (was white-on-dark) */
+  --action: var(--zinc-900);
+  --action-hover: var(--zinc-800);
+  --action-active: var(--zinc-700);
+  --action-fg: var(--white);
+
+  /* Accent stays brand green; its text form darkens for contrast on white */
+  --accent-text: #0a7a34;
+
+  /* Status text darkens for AA on white (tints/borders stay — they're translucent) */
+  --info-text: #1d4ed8;
+  --danger-text: #b91c1c;
+  --success-text: #15803d;
+  --warning-text: #b45309;
+
+  /* Dark focus ring + softer shadows so light UI doesn't read as smudged */
+  --focus: var(--zinc-900);
+  --scrim: rgb(0 0 0 / 0.40);
+  --scrollbar-thumb: #8f8f95;
+  --scrollbar-thumb-hover: var(--zinc-500);
+  /* Automations flow-canvas dots (inline radial-gradient falls back to white 0.16 in dark). */
+  --canvas-dot: rgb(0 0 0 / 0.10);
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.08);
+  --shadow-2: 0 8px 24px rgb(0 0 0 / 0.10);
+  --shadow-3: 0 16px 48px rgb(0 0 0 / 0.14);
+}
+
+/* The faint page dot-grid is drawn with white lines — invisible on light; flip to faint black. */
+:root[data-theme^="light"] .bg-dot-grid {
+  background-image:
+    linear-gradient(rgb(0 0 0 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(0 0 0 / 0.05) 1px, transparent 1px);
+}
+
+/* The brand logo is a monochrome-white external SVG (can't inherit currentColor / the fg token);
+   invert it to black in light mode — visually identical to feedforceblack.svg. */
+:root[data-theme^="light"] .ff-logo { filter: invert(1); }
+
+/* Warm Dark: tint the white mark to the gruvbox cream (≈ the theme's #ebdbb2 fg) so the logo
+   matches the warm text instead of reading pure white. brightness+sepia recolours the monochrome
+   white SVG: white → ≈ rgb(238,218,183). Applies to the sidebar/loader marks that carry .ff-logo. */
+:root[data-theme="dark-hard"] .ff-logo { filter: brightness(0.75) sepia(0.7); }
+
+/* —— "Warm Light" (Gruvbox hard): warm re-tint + cream surface ramp over the light base.
+      Surfaces: page == panel like dark, tiers rise darker (bg0_h → bg0_s → bg1). —— */
+:root[data-theme="light-hard"] {
+  /* Surfaces */
+  --surface-page: #f9f5d7;
+  --surface-1: #f9f5d7;
+  --surface-2: #f2e5bc;
+  --surface-3: #ebdbb2;
+  --surface-overlay: rgb(249 245 215 / 0.85);
+  --surface-hover: rgb(60 56 54 / 0.06);
+  --surface-active: rgb(60 56 54 / 0.10);
+  --surface-inset: #f2e5bc;
+  /* Text — gruvbox warm ramp (fg1..gray) */
+  --fg: #3c3836;
+  --fg-2: #504945;
+  --fg-3: #655c54;
+  --fg-4: #786b60;
+  /* Borders — bg2/bg3 tier */
+  --line: #d5c4a1;
+  --line-strong: #bdae93;
+  --line-faint: rgb(60 56 54 / 0.10);
+  /* Primary action: warm near-black button, cream text */
+  --action: #3c3836;
+  --action-hover: #504945;
+  --action-active: #665c54;
+  --action-fg: #fbf1c7;
+  /* Accent-text darkened for AA on cream + accent-tint pills (was inheriting the light #0a7a34) */
+  --accent-text: #076a2c;
+  /* Status text — gruvbox faded hues, darkened to clear AA on cream + their tint pills */
+  --info-text: #076678;
+  --danger-text: #9d0006;
+  --success-text: #615f07;
+  --warning-text: #af3a03;
+  --focus: #3c3836;
+  --scrollbar-thumb: #928374;
+  --scrollbar-thumb-hover: #7c6f64;
+  --canvas-dot: rgb(60 56 54 / 0.12);
+}
+
+/* —— "Warm Dark" (Gruvbox dark hard): overrides the default-dark base with the warm gruvbox
+      palette. It's a DARK theme, so the ^="light"-scoped rules (.bg-dot-grid flip, .ff-logo
+      invert) don't match it — the white logo/loader/grid defaults apply, which is correct on a
+      dark surface. Accent (brand green), scrim and shadows inherit the base dark values. —— */
+:root[data-theme="dark-hard"] {
+  /* Surfaces — bg0_hard page/panel, tiers rise lighter (bg0 / bg0_s) */
+  --surface-page: #1d2021;
+  --surface-1: #1d2021;
+  --surface-2: #282828;
+  --surface-3: #32302f;
+  --surface-overlay: rgb(40 40 40 / 0.92);
+  --surface-hover: rgb(235 219 178 / 0.06);
+  --surface-active: rgb(235 219 178 / 0.10);
+  --surface-inset: #141617;
+  /* Text — gruvbox fg ramp (fg1 → gray); fg-4 lifted to clear AA for meta text on bg0_hard */
+  --fg: #ebdbb2;
+  --fg-2: #d5c4a1;
+  --fg-3: #a89984;
+  --fg-4: #a08d78;
+  /* Borders — bg1/bg2 (kept above the surface tiers so hairlines stay visible) */
+  --line: #3c3836;
+  --line-strong: #504945;
+  --line-faint: rgb(235 219 178 / 0.08);
+  /* Primary action: light cream button, dark text (mirrors the white button in default dark) */
+  --action: #ebdbb2;
+  --action-hover: #d5c4a1;
+  --action-active: #bdae93;
+  --action-fg: #1d2021;
+  /* Accent → gruvbox gold (the theme's signature). Overrides the brand green for Warm Dark ONLY, so
+     every accent element (buttons, active nav, toggles, badges, links, focus pills) reads gold.
+     Black-ish text on the gold fill = 6.6:1; the brighter --accent-text #fabd2f = 9.6:1 on bg0_hard. */
+  --accent: #d79921;
+  --accent-hover: #b57614;
+  --accent-active: #a86e12;
+  --accent-fg: #1d2021;
+  --accent-text: #fabd2f;
+  --accent-tint: rgb(215 153 33 / 0.15);
+  --accent-tint-hover: rgb(215 153 33 / 0.24);
+  --accent-border: rgb(215 153 33 / 0.45);
+  --shadow-glow: 0 0 48px rgb(215 153 33 / 0.16);
+  /* Status text — gruvbox bright hues (AA on bg0_hard); tints/borders inherit base dark */
+  --info-text: #83a598;
+  --danger-text: #fd7a6a;
+  --success-text: #b8bb26;
+  --warning-text: #fabd2f;
+  --focus: #ebdbb2;
+  --scrollbar-thumb: #504945;
+  --scrollbar-thumb-hover: #665c54;
+  --canvas-dot: rgb(235 219 178 / 0.14);
+}
+
+/* Light-tuned copies of the a11y/support fallbacks near the top of this file. The light block's
+   :root[data-theme="light"] (0,2,0) outranks those plain-:root (0,1,0) fallbacks regardless of
+   source order — media/@supports wrappers add no specificity — so without these, "reduce
+   transparency", missing backdrop-filter, and "increase contrast" would silently no-op in light
+   mode. Same specificity as the light block, placed AFTER it so source order breaks the tie.
+   The dark fallbacks' values are dark-tuned and can't be reused here. */
+@media (prefers-contrast: more) {
+  :root[data-theme^="light"] {
+    --line: var(--zinc-400);
+    --line-faint: var(--zinc-400);
+    --fg-2: var(--zinc-700);
+    --fg-3: var(--zinc-600);
+  }
+  /* Warm Light gets a warm-hued boost (same specificity, later in source → wins for it). */
+  :root[data-theme="light-hard"] {
+    --line: #7c6f64;
+    --line-faint: #7c6f64;
+    --fg-2: #3c3836;
+    --fg-3: #504945;
+  }
+  /* Warm Dark: (0,2,0) would otherwise defeat the base :root dark boost — restate it in gruvbox. */
+  :root[data-theme="dark-hard"] {
+    --line: #665c54;
+    --line-faint: #665c54;
+    --fg-2: #fbf1c7;
+    --fg-3: #d5c4a1;
+  }
+}
+/* Opaque overlay fallback: var(--surface-*) resolves per-theme at use time (white on neutral
+   light, cream on Warm Light, raised gruvbox on Warm Dark). Warm Dark needs its own line — it doesn't
+   match ^="light" and its (0,2,0) block would defeat the base :root opaque fallback otherwise. */
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-theme^="light"] { --surface-overlay: var(--surface-1); }
+  :root[data-theme="dark-hard"] { --surface-overlay: var(--surface-2); }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  :root[data-theme^="light"] { --surface-overlay: var(--surface-1); }
+  :root[data-theme="dark-hard"] { --surface-overlay: var(--surface-2); }
+}
+
+/* ============================================================================
+   TAILWIND v4 THEME MAPPING — exposes semantic tokens as utilities
+   (bg-*, text-*, border-*, ring-*, rounded-*, text-<role>, shadow-*, ease-*)
+   ========================================================================== */
+@theme inline {
+  --color-page: var(--surface-page);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-hover: var(--surface-hover);
+  --color-active: var(--surface-active);
+  --color-inset: var(--surface-inset);
+
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-line-faint: var(--line-faint);
+
+  --color-fg: var(--fg);
+  --color-fg-2: var(--fg-2);
+  --color-fg-3: var(--fg-3);
+  --color-fg-4: var(--fg-4);
+
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-action-active: var(--action-active);
+  --color-action-fg: var(--action-fg);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-text: var(--accent-text);
+  --color-accent-tint: var(--accent-tint);
+  --color-accent-tint-hover: var(--accent-tint-hover);
+  --color-accent-border: var(--accent-border);
+
+  --color-info: var(--info);          --color-info-text: var(--info-text);
+  --color-info-tint: var(--info-tint); --color-info-border: var(--info-border);
+  --color-danger: var(--danger);      --color-danger-text: var(--danger-text);
+  --color-danger-tint: var(--danger-tint); --color-danger-tint-hover: var(--danger-tint-hover); --color-danger-border: var(--danger-border);
+  --color-success: var(--success);    --color-success-text: var(--success-text);
+  --color-success-tint: var(--success-tint); --color-success-border: var(--success-border);
+  --color-warning: var(--warning);    --color-warning-text: var(--warning-text);
+  --color-warning-tint: var(--warning-tint); --color-warning-border: var(--warning-border);
+
+  --color-focus: var(--focus);
+
+  /* Radius scale (overrides Tailwind defaults) */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /* Type scale — 13px is the HARD CEILING for the whole app. Every role is 13px; hierarchy comes
+     from weight (400→700) + tracking, not size. */
+  --text-caption: 0.8125rem;    --text-caption--line-height: 1.35;  --text-caption--font-weight: 500;  --text-caption--letter-spacing: 0.01em;
+  --text-label: 0.8125rem;      --text-label--line-height: 1.3;     --text-label--font-weight: 500;
+  --text-body: 0.8125rem;       --text-body--line-height: 1.45;     --text-body--font-weight: 400;
+  --text-subheading: 0.8125rem; --text-subheading--line-height: 1.3; --text-subheading--font-weight: 600;
+  --text-heading: 0.8125rem;    --text-heading--line-height: 1.3;   --text-heading--font-weight: 600;  --text-heading--letter-spacing: -0.005em;
+  --text-title: 0.8125rem;      --text-title--line-height: 1.3;     --text-title--font-weight: 700;    --text-title--letter-spacing: -0.005em;
+  --text-display: 0.8125rem;    --text-display--line-height: 1.3;   --text-display--font-weight: 700;  --text-display--letter-spacing: -0.005em;
+  --text-mono: 0.8125rem;       --text-mono--line-height: 1.3;      --text-mono--font-weight: 500;
+  /* Cap every Tailwind numeric size at 13px too, so no raw text-sm/base/lg/xl/2xl/3xl slips past. */
+  --text-xs: 0.8125rem;   --text-sm: 0.8125rem;   --text-base: 0.8125rem;
+  --text-lg: 0.8125rem;   --text-xl: 0.8125rem;   --text-2xl: 0.8125rem;
+  --text-3xl: 0.8125rem;  --text-4xl: 0.8125rem;  --text-5xl: 0.8125rem;
+
+  --font-sans: var(--font-system);
+  --font-mono: var(--font-mono-stack);
+
+  --shadow-1: var(--shadow-1);
+  --shadow-2: var(--shadow-2);
+  --shadow-3: var(--shadow-3);
+  --shadow-glow: var(--shadow-glow);
+
+  --ease-standard: var(--ease-standard);
+  --ease-emphasized: var(--ease-emphasized);
+  --ease-exit: var(--ease-exit);
+}
+
+/* ============================================================================
+   FEEDFORCE LANDING THEME — shadcn-style tokens used only by the marketing
+   landing (src/components/*). Utilities resolve through runtime vars that are
+   ONLY defined under .ff-landing, so the app's own tokens (incl. the green
+   --accent) are untouched everywhere else. NOTE: the app's 13px type ceiling
+   is global, so the landing components use explicit text-[..]/[..] sizes.
+   ========================================================================== */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --font-heading: var(--font-system);
+}
+
+/* Dark token values (the landing is dark-only), scoped to the landing wrapper. */
+.ff-landing {
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  /* Restore normal type rhythm — the app body pins font-size to 13px. */
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+@layer base {
+  /* shadcn preflight equivalent, scoped: default border colour inside the landing. */
+  .ff-landing *, .ff-landing ::before, .ff-landing ::after {
+    border-color: var(--border);
+  }
+}
+
+/* Flowing dashes along the landing's SVG connector paths (dasharray 3 3 → full periods). */
+@keyframes dash-flow { to { stroke-dashoffset: -12; } }
+.dash-flow { animation: dash-flow 0.6s linear infinite; }
+
+/* ============================================================================
+   BASE
+   ========================================================================== */
+/* Global UI scale: the whole app renders at 90%, like browser zoom — one knob (--app-zoom) instead
+   of hand-shrinking every component. `zoom` (unlike transform:scale) reflows real layout, and pointer
+   math stays consistent because getBoundingClientRect and clientX/Y scale together.
+   The headless render page opts OUT via [data-render-root]: its screenshots are pixel-exact
+   (RENDER_W × deviceScaleFactor — serverPublish.ts) and must render at true scale. */
+:root { --app-zoom: 0.9; }
+html { zoom: var(--app-zoom); }
+html:has([data-render-root]) { zoom: 1; }
+
+/* vh units are NOT rescaled by zoom, so 100vh covers only 90% of the real viewport — a dead strip at
+   the bottom of every full-height shell. Stretch the full-viewport utilities back to the true
+   viewport; the render page (zoom 1) keeps plain 100vh. Unlayered, so they win over @layer utilities. */
+html:not(:has([data-render-root])) .h-screen { height: calc(100vh / var(--app-zoom)); }
+html:not(:has([data-render-root])) .min-h-screen { min-height: calc(100vh / var(--app-zoom)); }
+
+body {
+  background: var(--surface-page);
+  color: var(--fg);
+  font-family: var(--font-system);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button { cursor: pointer; }
+button:active { transform: scale(0.97); transition: transform var(--dur-fast) var(--ease-standard); }
+
+/* Global focus-visible safety net — no control ever ships with a stripped outline. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Content Sheet cells opt out of the offset outline box (too heavy inside a dense grid). Unlayered
+   so it beats the safety net above; a contained 1px inset ring (focus:shadow on the cell) marks the
+   active cell instead. */
+.sheet-cell:focus-visible { outline: none; }
+
+/* ============================================================================
+   Z-INDEX + helper utilities (named layers replace ad-hoc z-50 / z-[9999])
+   ========================================================================== */
+@layer utilities {
+  .z-sticky   { z-index: var(--z-sticky); }
+  .z-dropdown { z-index: var(--z-dropdown); }
+  .z-overlay  { z-index: var(--z-overlay); }
+  .z-modal    { z-index: var(--z-modal); }
+  .z-toast    { z-index: var(--z-toast); }
+  .z-max      { z-index: var(--z-max); }
+  .scrollbar-none { scrollbar-width: none; }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  /* Faint page grid (was the inline GRID_BG_STYLE). */
+  .bg-dot-grid {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.07) 1px, transparent 1px);
+    background-size: 96px 96px;
+  }
+  /* Shared focus ring used by ui/ primitives (inset-safe two-tone ring). */
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--surface-page), 0 0 0 4px var(--focus);
+  }
+}
+
+/* ============================================================================
+   RANGE INPUT — brand-accent fill, larger grabbable thumb, focus ring.
+   Driven by inline --fill (%) per slider; opt out of accent via --fill-color.
+   ========================================================================== */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  border: none;
+  outline: none;
+  background: linear-gradient(to right,
+    var(--fill-color, var(--accent)) var(--fill, 50%),
+    var(--zinc-700) var(--fill, 50%));
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--black); border: 2px solid var(--accent);
+  cursor: pointer; box-shadow: var(--shadow-1);
+  transition: transform var(--dur-fast) var(--ease-standard);
+}
+input[type='range']:active::-webkit-slider-thumb { transform: scale(1.12); }
+input[type='range']:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--focus); outline-offset: 2px; }
+input[type='range']::-webkit-slider-runnable-track { background: transparent; border: none; }
+input[type='range']::-moz-range-thumb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--black); border: 2px solid var(--accent); cursor: pointer;
+}
+input[type='range']:focus-visible::-moz-range-thumb { outline: 2px solid var(--focus); outline-offset: 2px; }
+input[type='range']::-moz-range-track { background: transparent; border: none; }
+input[type='range']::-moz-range-progress { background: transparent; }
+
+/* Color inputs */
+input[type='color']::-webkit-color-swatch-wrapper { padding: 0; }
+input[type='color']::-webkit-color-swatch { border: none; border-radius: var(--radius-sm); }
+input[type='color']::-moz-color-swatch { border: none; border-radius: var(--radius-sm); }
+
+/* ============================================================================
+   SCROLLBARS — quiet dark, consistent across panels
+   ========================================================================== */
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb); border-radius: 9999px;
+    border: 2px solid transparent; background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+}
+* { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) transparent; }
+
+/* Hide the native scrollbar on a specific element (the canvas has its own custom overview/pan bar).
+   Deliberately UNLAYERED and after the rules above, with !important, so it reliably wins: the layered
+   .scrollbar-none util was outranked by the unlayered global scrollbar rules, and the global
+   ::-webkit-scrollbar author styles make Chrome ignore scrollbar-width. This covers both paths. */
+.no-native-scrollbar { scrollbar-width: none !important; }
+.no-native-scrollbar::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; }
+
+/* ============================================================================
+   KEYFRAMES — spin (load-bearing for inline spinners) + marching-ants (BRIA)
+   ========================================================================== */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.te-marching-ants {
+  background-image:
+    linear-gradient(90deg, rgba(255,255,255,0.95) 50%, transparent 0),
+    linear-gradient(90deg, rgba(255,255,255,0.95) 50%, transparent 0),
+    linear-gradient(0deg,  rgba(255,255,255,0.95) 50%, transparent 0),
+    linear-gradient(0deg,  rgba(255,255,255,0.95) 50%, transparent 0);
+  background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+  background-size: 8px 1px, 8px 1px, 1px 8px, 1px 8px;
+  background-position: 0 0, 0 100%, 0 0, 100% 0;
+  animation: te-marching-ants 0.5s linear infinite;
+}
+@keyframes te-marching-ants {
+  to { background-position: 16px 0, -16px 100%, 0 -16px, 100% 16px; }
+}
+
+/* Flowing dashes along an SVG connector path (dasharray 3 3 → animate one+ full periods). */
+@keyframes de-dash-flow { to { stroke-dashoffset: -12; } }
+.de-dash-flow { animation: de-dash-flow 0.6s linear infinite; }
+
+/* Logo marquee (integrations strip). The track holds two identical copies; translating -50% loops
+   seamlessly. Each item carries its own right margin so there's no odd gap between the copies. */
+@keyframes de-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.de-marquee { animation: de-marquee 45s linear infinite; }
+.de-marquee-rev { animation: de-marquee 45s linear infinite reverse; }
+
+/* Dialog / modal entrance — backdrop fades up, card fades + lifts into place. Applied to the
+   shared Modal and the hand-rolled auth / template overlays so every card popup eases in. */
+@keyframes de-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes de-dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: none; }
+}
+.de-overlay-in { animation: de-overlay-in var(--dur-base) var(--ease-standard); }
+.de-dialog-in { animation: de-dialog-in var(--dur-spatial) var(--ease-emphasized); }
+
+/* Matching exit — backdrop fades out, card fades + drops. `forwards` holds the final (hidden) state for
+   the brief moment the element stays mounted before it's removed. */
+@keyframes de-overlay-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes de-dialog-out {
+  from { opacity: 1; transform: none; }
+  to   { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+.de-overlay-out { animation: de-overlay-out var(--dur-base) var(--ease-standard) forwards; }
+.de-dialog-out { animation: de-dialog-out var(--dur-base) var(--ease-exit) forwards; }
+
+/* Syntax-highlight tokens for the automations CodeEditor (One-Dark hues, readable on bg-page in
+   both themes; comments reuse the muted foreground token so they follow the theme). */
+.de-tok-k { color: #c678dd; }               /* keywords */
+.de-tok-s { color: #98c379; }               /* strings / template literals */
+.de-tok-n { color: #d19a66; }               /* numbers */
+.de-tok-l { color: #56b6c2; }               /* true/false/null/undefined + builtins (JSON, Math, ctx…) */
+.de-tok-f { color: #61afef; }               /* function calls / declaration names */
+.de-tok-p { color: #e06c75; }               /* property access + object keys */
+.de-tok-c { color: var(--fg-4); font-style: italic; }  /* comments */
+
+/* Side panels (Automations AI chat dock / node config dock) sliding in from their edge. The section
+   sits in a container with overflow-x:clip, so the off-edge start is clipped (no scrollbar). */
+@keyframes de-panel-in-left  { from { opacity: 0; transform: translateX(-100%); } to { opacity: 1; transform: translateX(0); } }
+@keyframes de-panel-in-right { from { opacity: 0; transform: translateX(100%);  } to { opacity: 1; transform: translateX(0); } }
+.de-panel-in-left  { animation: de-panel-in-left  var(--dur-spatial) var(--ease-emphasized); }
+.de-panel-in-right { animation: de-panel-in-right var(--dur-spatial) var(--ease-emphasized); }
+
+/* AI copilot chat: subtle rise+fade as each message lands. */
+@keyframes de-msg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.de-msg-in { animation: de-msg-in 220ms var(--ease-standard, ease-out) both; }
+
+/* AI copilot: a brief brand-accent ring around the canvas when the AI applies an edit, so you SEE
+   it touched your work. Toggled by re-adding the class (keyed) from the editor grid. */
+@keyframes de-ai-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(0, 205, 64, 0.55); }
+  100% { box-shadow: 0 0 0 14px rgba(0, 205, 64, 0); }
+}
+.de-ai-pulse { animation: de-ai-pulse 620ms ease-out; border-radius: 8px; }
+/* (The global reduced-motion kill switch above neutralizes all of these automatically.) */
+
+/* ============================================================================
+   REDUCED MOTION — global kill switch
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur-base: 1ms; --dur-spatial: 1ms; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  button:active { transform: none; }
+}
+
+/* {placeholder} tokens shown gray in the template editor's inline text editors (live, while typing).
+   Visual only — class-based colour isn't read by htmlToSpans, so it's never saved into spans. */
+.de-ph { color: #9ca3af; }

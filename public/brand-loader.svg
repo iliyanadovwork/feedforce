@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="182" viewBox="-650 -1193 1300 1961" role="img" preserveAspectRatio="xMidYMid meet">
+  <title>Loading</title>
+  <desc>Animated logo loader: chevrons brighten in a downward wave while a light sheen sweeps down across them.</desc>
+  <defs>
+    <clipPath id="ll-clip">
+      <path d="M-127.1 -1078.4 L-536.2 -822.3 Q-615 -773 -615 -680 L-615 -680 Q-615 -587 -536.1 -636.3 L-127.2 -891.6 Q0 -971 127.2 -891.6 L536.1 -636.3 Q615 -587 615 -680 L615 -680 Q615 -773 536.2 -822.3 L127.1 -1078.4 Q0 -1158 -127.1 -1078.4 Z"/>
+      <path d="M-127.2 -653.6 L-536.1 -398.3 Q-615 -349 -615 -256 L-615 -256 Q-615 -163 -536.1 -212.3 L-127.2 -467.6 Q0 -547 127.2 -467.6 L536.1 -212.3 Q615 -163 615 -256 L615 -256 Q615 -349 536.1 -398.3 L127.2 -653.6 Q0 -733 -127.2 -653.6 Z"/>
+      <path d="M127.2 653.6 L536.1 398.3 Q615 349 615 256 L615 256 Q615 163 536.1 212.3 L127.2 467.6 Q0 547 -127.2 467.6 L-536.1 212.3 Q-615 163 -615 256 L-615 256 Q-615 349 -536.1 398.3 L-127.2 653.6 Q0 733 127.2 653.6 Z"/>
+      <path d="M-77.5 -167.4 L248.5 36.4 Q323 83 397.5 36.5 L397.5 36.5 Q472 -10 397.5 -56.6 L71.5 -260.4 Q-3 -307 -77.5 -260.5 L-77.5 -260.5 Q-152 -214 -77.5 -167.4 Z"/>
+      <path d="M-397.5 56.6 L-71.5 260.4 Q3 307 77.5 260.5 L77.5 260.5 Q152 214 77.5 167.4 L-248.5 -36.4 Q-323 -83 -397.5 -36.5 L-397.5 -36.5 Q-472 10 -397.5 56.6 Z"/>
+    </clipPath>
+    <linearGradient id="ll-band" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#DFFFEA" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#DFFFEA" stop-opacity="0.8"/>
+      <stop offset="1" stop-color="#DFFFEA" stop-opacity="0"/>
+    </linearGradient>
+    <style>
+      .seg{fill:#00CD40;animation:ll-casc 1.111s ease-in-out infinite}
+      .s2{animation-delay:0.1s}.s4{animation-delay:0.2s}.s5{animation-delay:0.3s}.s3{animation-delay:0.4s}
+      @keyframes ll-casc{0%,100%{opacity:0.3}40%{opacity:1}}
+      .sweep{animation:ll-shim 1.111s linear infinite}
+      @keyframes ll-shim{from{transform:translateY(0)}to{transform:translateY(3900px)}}
+      @media (prefers-reduced-motion: reduce){
+        .seg{animation:none;opacity:1}
+        .sweep{display:none}
+      }
+    </style>
+  </defs>
+
+  <path class="seg s1" d="M-127.1 -1078.4 L-536.2 -822.3 Q-615 -773 -615 -680 L-615 -680 Q-615 -587 -536.1 -636.3 L-127.2 -891.6 Q0 -971 127.2 -891.6 L536.1 -636.3 Q615 -587 615 -680 L615 -680 Q615 -773 536.2 -822.3 L127.1 -1078.4 Q0 -1158 -127.1 -1078.4 Z"/>
+  <path class="seg s2" d="M-127.2 -653.6 L-536.1 -398.3 Q-615 -349 -615 -256 L-615 -256 Q-615 -163 -536.1 -212.3 L-127.2 -467.6 Q0 -547 127.2 -467.6 L536.1 -212.3 Q615 -163 615 -256 L615 -256 Q615 -349 536.1 -398.3 L127.2 -653.6 Q0 -733 -127.2 -653.6 Z"/>
+  <path class="seg s3" d="M127.2 653.6 L536.1 398.3 Q615 349 615 256 L615 256 Q615 163 536.1 212.3 L127.2 467.6 Q0 547 -127.2 467.6 L-536.1 212.3 Q-615 163 -615 256 L-615 256 Q-615 349 -536.1 398.3 L-127.2 653.6 Q0 733 127.2 653.6 Z"/>
+  <path class="seg s4" d="M-77.5 -167.4 L248.5 36.4 Q323 83 397.5 36.5 L397.5 36.5 Q472 -10 397.5 -56.6 L71.5 -260.4 Q-3 -307 -77.5 -260.5 L-77.5 -260.5 Q-152 -214 -77.5 -167.4 Z"/>
+  <path class="seg s5" d="M-397.5 56.6 L-71.5 260.4 Q3 307 77.5 260.5 L77.5 260.5 Q152 214 77.5 167.4 L-248.5 -36.4 Q-323 -83 -397.5 -36.5 L-397.5 -36.5 Q-472 10 -397.5 56.6 Z"/>
+
+  <g clip-path="url(#ll-clip)">
+    <rect class="sweep" x="-615" y="-2050" width="1230" height="800" fill="url(#ll-band)"/>
+  </g>
+</svg>

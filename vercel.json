@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "crons": [
+    { "path": "/api/cron/cleanup-renders", "schedule": "0 * * * *" },
+    { "path": "/api/cron/automations", "schedule": "5 * * * *" },
+    { "path": "/api/cron/rewards-views", "schedule": "30 * * * *" }
+  ]
+}
